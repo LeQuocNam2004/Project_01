@@ -21,3 +21,25 @@ module.exports.index = async(req, res) => {
         products: products
     });
 }
+
+// [GET] /products/:slug
+module.exports.detail = async (req, res) => {
+    try {
+      const slug = req.params.slug;
+  
+      const product = await Product.findOne({
+        slug: slug,
+        deleted: false,
+        status: "active"
+      });
+  
+      // console.log(product);
+  
+      res.render("client/pages/products/detail", {
+        pageTitle: product.title,
+        product: product
+      });
+    } catch (error) {
+      res.redirect("/");
+    }
+}
