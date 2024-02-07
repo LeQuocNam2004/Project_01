@@ -33,8 +33,34 @@ module.exports.category = async (req, res) => {
     deleted: false
   });
 
+  const getSubCategory = async (parentId) => {
+    const subs = await ProductCategory.find({
+      parent_id: parentId,
+      status: "active",
+      deleted: false
+    });
+
+    let allSubs = [...subs];
+
+    for(const sub of subs) {
+      const childs = await getSubCategory(sub.id);
+      allSubs = allSubs.concat(childs);
+    }
+
+    return allSubs;
+  }
+
+  const allCagegory = await getSubCategory(category.id);
+
+  const allCagegoryId = allCagegory.map(item => item.id);
+
   const products = await Product.find({
-    product_category_id: category.id,
+    product_category_id: {
+      $in: [
+        category.id,
+        ...allCagegoryId
+      ]
+    },
     status: "active",
     deleted: false
   }).sort({ position: "desc" });
@@ -42,8 +68,6 @@ module.exports.category = async (req, res) => {
   for (const item of products) {
     item.priceNew = (item.price * (100 - item.discountPercentage)/100).toFixed(0);
   }
-
-  console.log(products);
 
   res.render("client/pages/products/index", {
     pageTitle: "Danh sách sản phẩm",
