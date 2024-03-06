@@ -71,8 +71,6 @@ socket.on("SERVER_RETURN_LENGTH_ACCEPT_FRIEND", (data) => {
 socket.on("SERVER_RETURN_INFO_ACCEPT_FRIEND", (data) => {
   const dataUsersAccept = document.querySelector(`[data-users-accept="${data.userIdB}"]`);
   if(dataUsersAccept) {
-    console.log(data.infoUserA);
-
     const newBoxUser = document.createElement("div");
     newBoxUser.classList.add("col-6");
     newBoxUser.setAttribute("user-id", data.infoUserA._id);
@@ -141,6 +139,13 @@ socket.on("SERVER_RETURN_INFO_ACCEPT_FRIEND", (data) => {
       socket.emit("CLIENT_ACCEPT_FRIEND", userId);
     });
     // Hết Chấp nhận lời mời kết bạn
+  }
+
+  // Khi A gửi kết bạn cho B, danh sách người dùng của B xóa đi A
+  const dataUsersNotFriend = document.querySelector(`[data-users-not-friend="${data.userIdB}"]`);
+  if(dataUsersNotFriend) {
+    const boxUserDelete = dataUsersNotFriend.querySelector(`[user-id="${data.infoUserA._id}"]`);
+    dataUsersNotFriend.removeChild(boxUserDelete);
   }
 });
 // End SERVER_RETURN_INFO_ACCEPT_FRIEND
