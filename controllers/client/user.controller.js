@@ -82,6 +82,12 @@ module.exports.loginPost = async (req, res) => {
   }, {
     user_id: user.id
   });
+
+  await User.updateOne({
+    _id: user.id
+  }, {
+    statusOnline: "online"
+  });
   
   res.redirect("/");
 };
@@ -89,6 +95,13 @@ module.exports.loginPost = async (req, res) => {
 // [GET] /user/logout
 module.exports.logout = async (req, res) => {
   res.clearCookie("tokenUser");
+
+  await User.updateOne({
+    _id: res.locals.user.id
+  }, {
+    statusOnline: "offline"
+  });
+  
   res.redirect("/");
 };
 
