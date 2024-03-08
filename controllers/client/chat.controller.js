@@ -6,11 +6,14 @@ const chatSocket = require("../../sockets/client/chat.socket");
 // [GET] /chat/:roomChatId
 module.exports.index = async (req, res) => {
   // SocketIO
-  chatSocket(res);
+  chatSocket(req, res);
   // End SocketIO
+
+  const roomChatId = req.params.roomChatId;
 
   // Lấy data từ database
   const chats = await Chat.find({
+    room_chat_id: roomChatId,
     deleted: false
   });
 
@@ -21,8 +24,6 @@ module.exports.index = async (req, res) => {
 
     chat.infoUser = infoUser;
   }
-
-  console.log(chats);
   // Hết Lấy data từ database
 
   res.render("client/pages/chat/index", {
